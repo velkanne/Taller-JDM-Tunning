@@ -1,6 +1,6 @@
 # Taller Mecánico MVC
 
-**Autor:** velkanne
+**Autor:** Tu Nombre
 
 **Descripción:**
 Aplicación de escritorio para la gestión de órdenes de trabajo de un taller mecánico, implementada siguiendo la arquitectura Modelo-Vista-Controlador (MVC). Permite registrar, visualizar, modificar y eliminar órdenes de trabajo para vehículos, gestionando información como patente, modelo, servicio, urgencia y observaciones. Incluye persistencia de datos.
