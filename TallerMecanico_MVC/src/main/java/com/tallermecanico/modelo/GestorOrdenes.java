@@ -3,6 +3,8 @@ package com.tallermecanico.modelo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
  * Gestor de órdenes de trabajo con persistencia JSON.
  */
 public class GestorOrdenes {
+    private static final Logger logger = LoggerFactory.getLogger(GestorOrdenes.class);
     private List<OrdenTrabajo> ordenes;
     private static final String ARCHIVO_DATOS = "ordenes.json";
     private final Gson gson;
@@ -23,6 +26,7 @@ public class GestorOrdenes {
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
+        logger.info("Inicializando GestorOrdenes");
         cargarDatos();
     }
 
@@ -34,6 +38,7 @@ public class GestorOrdenes {
     public void agregarOrden(OrdenTrabajo orden) {
         if (orden != null) {
             ordenes.add(orden);
+            logger.debug("Orden agregada: {}", orden.getPatente());
         }
     }
 
@@ -172,9 +177,9 @@ public class GestorOrdenes {
     public void guardarDatos() {
         try (Writer writer = new FileWriter(ARCHIVO_DATOS)) {
             gson.toJson(ordenes, writer);
+            logger.info("Datos guardados exitosamente: {} órdenes", ordenes.size());
         } catch (IOException e) {
-            System.err.println("Error al guardar datos en JSON: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error al guardar datos en JSON: {}", e.getMessage(), e);
         }
     }
 
@@ -191,13 +196,17 @@ public class GestorOrdenes {
 
                 if (ordenesLeidas != null) {
                     ordenes = ordenesLeidas;
+                    logger.info("Datos cargados exitosamente: {} órdenes", ordenes.size());
                 } else {
                     ordenes = new ArrayList<>();
+                    logger.warn("Archivo JSON vacío, iniciando con lista nueva");
                 }
             } catch (IOException e) {
-                System.err.println("Error al cargar datos desde JSON: " + e.getMessage());
+                logger.error("Error al cargar datos desde JSON: {}", e.getMessage(), e);
                 ordenes = new ArrayList<>();
             }
+        } else {
+            logger.info("Archivo de datos no existe, iniciando con lista vacía");
         }
     }
 }

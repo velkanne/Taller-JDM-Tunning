@@ -3,6 +3,8 @@ package com.tallermecanico.controlador;
 import com.tallermecanico.modelo.GestorOrdenes;
 import com.tallermecanico.modelo.OrdenTrabajo;
 import com.tallermecanico.util.ValidadorPatente;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JOptionPane;
 import java.util.HashMap;
@@ -14,10 +16,12 @@ import java.util.Map;
  * Maneja la lógica de negocio y validaciones.
  */
 public class ControladorTaller {
+    private static final Logger logger = LoggerFactory.getLogger(ControladorTaller.class);
     private GestorOrdenes gestorOrdenes;
 
     public ControladorTaller() {
         this.gestorOrdenes = new GestorOrdenes();
+        logger.info("ControladorTaller inicializado");
     }
 
     /**
@@ -29,6 +33,7 @@ public class ControladorTaller {
             String urgencia, boolean clienteEspera, String observaciones) {
 
         if (!validarDatos(patente, modeloAuto)) {
+            logger.warn("Validación fallida al agregar orden: patente={}, modelo={}", patente, modeloAuto);
             return false;
         }
 
@@ -42,6 +47,7 @@ public class ControladorTaller {
 
         gestorOrdenes.agregarOrden(nuevaOrden);
         gestorOrdenes.guardarDatos();
+        logger.info("Orden agregada exitosamente: {}", nuevaOrden.getPatente());
         return true;
     }
 
@@ -153,16 +159,19 @@ public class ControladorTaller {
      */
     private boolean validarDatos(String patente, String modeloAuto) {
         if (patente == null || patente.trim().isEmpty()) {
+            logger.debug("Validación fallida: patente vacía");
             mostrarError("La patente no puede estar vacía");
             return false;
         }
 
         if (modeloAuto == null || modeloAuto.trim().isEmpty()) {
+            logger.debug("Validación fallida: modelo vacío");
             mostrarError("El modelo del auto no puede estar vacío");
             return false;
         }
 
         if (!ValidadorPatente.validar(patente.trim())) {
+            logger.debug("Validación fallida: formato patente inválido - {}", patente);
             mostrarError("Formato de patente inválido.\n\n" + ValidadorPatente.getMensajeFormato());
             return false;
         }
